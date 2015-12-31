@@ -1,4 +1,5 @@
 var canvas = document.getElementById('cursor-canvas');
+var ctx = canvas.getContext('2d');
 
 var goFullscreen = function(element) {
   if (element.requestFullscreen) {
@@ -12,6 +13,14 @@ var goFullscreen = function(element) {
   }
 };
 
+var isFullscreen = function() {
+  return (
+      !!document.fullScreenElement ||
+      !!document.mozFullScreenElement ||
+      !!document.webkitFullscreenElement ||
+      !!document.msFullscreenElement);
+};
+
 document.body.addEventListener('click', function() {
   goFullscreen(canvas);
 });
@@ -22,11 +31,10 @@ var fullscreenEvents = [
     'fullscreenchange',
     'MSFullscreenChange'];
 
-var fullscreenEventFunction = function() {
+var fullscreenEventFunction = function(e) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  var ctx = canvas.getContext('2d');
   ctx.rect(100, 100, 100, 100);
   ctx.stroke();
 
@@ -36,6 +44,9 @@ var fullscreenEventFunction = function() {
   ctx.strokeStyle="red";
   ctx.rect(5,5,290,140);
   ctx.stroke();
+
+  var text = isFullscreen() ? "Fullscreen" : "Not fullscreen";
+  ctx.fillText(text, 10, 50);
 };
 
 for (var i = 0; i < fullscreenEvents.length; ++i) {
