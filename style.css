@@ -39,7 +39,7 @@ body {
   cursor: pointer;
   display: inline-block;
   font-family: Verdana, sans-serif;
-  font-size: 14px;
+  font-size: 20px;
   font-stretch: normal;
   font-style: normal;
   font-variant: normal;
@@ -47,7 +47,7 @@ body {
   letter-spacing: normal;
   line-height: 20px;
   margin-bottom: 0px;
-  padding: 5px;
+  padding: 10px;
 }
 
 .center-parent {
