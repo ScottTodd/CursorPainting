@@ -21,7 +21,8 @@ var isFullscreen = function() {
       !!document.msFullscreenElement);
 };
 
-document.body.addEventListener('click', function() {
+var startButton = document.getElementById('start-button');
+startButton.addEventListener('click', function() {
   goFullscreen(canvas);
 });
 
@@ -35,20 +36,19 @@ var fullscreenEventFunction = function(e) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  ctx.rect(100, 100, 100, 100);
-  ctx.stroke();
-
-  // Red rectangle
-  ctx.beginPath();
-  ctx.lineWidth="6";
-  ctx.strokeStyle="red";
-  ctx.rect(5,5,290,140);
-  ctx.stroke();
-
-  var text = isFullscreen() ? "Fullscreen" : "Not fullscreen";
+  var text = isFullscreen() ? 'Fullscreen' : 'Not fullscreen';
   ctx.fillText(text, 10, 50);
 };
 
 for (var i = 0; i < fullscreenEvents.length; ++i) {
   document.body.addEventListener(fullscreenEvents[i], fullscreenEventFunction);
 }
+
+document.body.addEventListener('mousemove', function(e) {
+  var x = e.clientX;
+  var y = e.clientY;
+
+  ctx.fillStyle = '#000000';
+  ctx.rect(x, y, 1, 1);
+  ctx.fill();
+});
