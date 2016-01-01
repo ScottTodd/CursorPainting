@@ -26,27 +26,73 @@ startButton.addEventListener('click', function() {
   goFullscreen(canvas);
 });
 
+// Previous cursor position [x, y].
+var previousCursorPosition = [];
+// Previous touch positions [[x, y], [x, y], [x, y]].
+// Indices are Touch.identifier values.
+var previousTouchPositions = [];
+// Previous touch statuses. True if still active, false otherwise.
+// Indices are Touch.identifier values.
+var previousTouchStatuses = [];
+
 var mousemoveFunction = function(e) {
-  // Draw a dot where the mouse is.
   var x = e.clientX;
   var y = e.clientY;
 
-  ctx.fillStyle = '#000000';
-  ctx.rect(x, y, 1, 1);
-  ctx.fill();
+  if (previousCursorPosition.length == 0) {
+    // Draw a dot where the mouse is.
+    ctx.fillStyle = '#000000';
+    ctx.rect(x, y, 1, 1);
+    ctx.fill();
+  } else {
+    // Draw a line from the previous to current mouse position.
+    ctx.strokeStyle = '#000000';
+    ctx.beginPath();
+    ctx.moveTo(previousCursorPosition[0], previousCursorPosition[1]);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+  previousCursorPosition[0] = x;
+  previousCursorPosition[1] = y;
 };
 
 var touchmoveFunction = function(e) {
   for (var i = 0; i < e.touches.length; ++i) {
     var touch = e.touches[i];
+    var identifier = touch.identifier;
 
-    // Draw a dot where the touch is.
     var x = touch.clientX;
     var y = touch.clientY;
 
-    ctx.fillStyle = '#000000';
-    ctx.rect(x, y, 1, 1);
-    ctx.fill();
+    if (!previousTouchStatuses[identifier]) {
+      // Draw a dot where the touch is.
+      ctx.fillStyle = '#000000';
+      ctx.rect(x, y, 1, 1);
+      ctx.fill();
+    } else {
+      // Draw a line from the previous to current touch position.
+      ctx.strokeStyle = '#000000';
+      ctx.beginPath();
+      ctx.moveTo(previousTouchPositions[identifier][0],
+                 previousTouchPositions[identifier][1]);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    previousTouchStatuses[identifier] = true;
+    if (previousTouchPositions[identifier] === undefined) {
+      previousTouchPositions[identifier] = [x, y];
+    } else {
+      previousTouchPositions[identifier][0] = x;
+      previousTouchPositions[identifier][1] = y;
+    }
+  }
+};
+
+var touchendFunction = function(e) {
+  for (var i = 0; i < e.changedTouches.length; ++i) {
+    var identifier = e.changedTouches[i].identifier;
+    previousTouchStatuses[identifier] = false;
   }
 };
 
@@ -60,8 +106,10 @@ window.addEventListener('resize', function() {
 
 var enterFullscreen = function() {
   document.body.addEventListener('mousemove', mousemoveFunction);
+
   document.body.addEventListener('touchstart', touchmoveFunction);
   document.body.addEventListener('touchmove', touchmoveFunction);
+  document.body.addEventListener('touchend', touchendFunction);
 };
 
 var exitFullscreen = function() {
@@ -71,8 +119,10 @@ var exitFullscreen = function() {
   canvas.height = 0;
 
   document.body.removeEventListener('mousemove', mousemoveFunction);
+
   document.body.removeEventListener('touchstart', touchmoveFunction);
   document.body.removeEventListener('touchmove', touchmoveFunction);
+  document.body.removeEventListener('touchend', touchendFunction);
 };
 
 var fullscreenEvents = [
