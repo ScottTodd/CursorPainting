@@ -118,6 +118,10 @@ var exitFullscreen = function() {
   canvas.width = 0;
   canvas.height = 0;
 
+  previousCursorPosition.length = 0;
+  previousTouchPositions.length = 0;
+  previousTouchStatuses.length = 0;
+
   document.body.removeEventListener('mousemove', mousemoveFunction);
 
   document.body.removeEventListener('touchstart', touchmoveFunction);
